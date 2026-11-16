@@ -31,3 +31,19 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+# Build output and dependencies that do not belong in the repository.
+
+ui/node_modules/
+ui/test/.build/
+# Screenshots and other throwaway output.
+ui/shots/
+
+# The binary `make` builds in place.
+/fleet
+
+# The built app in internal/web/dist IS committed on purpose: `go build` embeds
+# it, so a Go-only checkout still builds a working master.
+
+# Release tarballs and their checksums, from `make release`.
+/dist/
+

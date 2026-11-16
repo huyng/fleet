@@ -1,0 +1,15 @@
+# Master configuration.
+#
+# fleet master -config master.toml
+
+# Address the API and web page bind to. The status page has no login, so keep
+# this on a trusted address or put it behind a proxy.
+listen = "127.0.0.1:8080"
+
+# Shared with every node. Use a long random string, for example from
+# head -c 32 /dev/urandom | base64
+secret = "change-me"
+
+# How often nodes are expected to report. A node quiet for three times this
+# long is shown as stale.
+report_interval = "15s"

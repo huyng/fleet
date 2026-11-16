@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>fleet</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.css">
+<script>
+/* Apply the saved palette before first paint, so there is no flash of the
+   wrong colours. React takes over after mounting. */
+(function () {
+  var stored = localStorage.getItem("fleet_theme");
+  var light = stored === "light" || (stored === null &&
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+  if (light) document.documentElement.classList.add("light");
+})();
+</script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

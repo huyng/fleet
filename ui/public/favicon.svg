@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="fleet">
+  <!-- The fleet mark: three stacked bars, the same shape as the one in the
+       page header. Drawn on a dark rounded square so it reads on both light
+       and dark browser tabs. The bars are drawn solid rather than faded,
+       because at 16px the faintest bar of the header version disappears.
+       The width and height give the file a size some older browsers need;
+       others scale it to whatever the tab asks for. -->
+  <rect width="32" height="32" rx="7" fill="#1a1a1a"/>
+  <rect x="6" y="6.5" width="20" height="5" rx="2.5" fill="#3ecf8e"/>
+  <rect x="6" y="13.5" width="20" height="5" rx="2.5" fill="#3ecf8e"/>
+  <rect x="6" y="20.5" width="20" height="5" rx="2.5" fill="#3ecf8e"/>
+</svg>

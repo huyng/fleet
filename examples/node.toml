@@ -1,0 +1,21 @@
+# Node configuration.
+#
+# fleet node -config node.toml
+
+# Base URL of the master.
+master = "http://127.0.0.1:8080"
+
+# Must match the master's secret.
+secret = "change-me"
+
+# How often to report.
+interval = "15s"
+
+# Name to report under. Left out, the machine's own hostname is used.
+# hostname = "web-1"
+
+# Filesystem measured for the disk figures.
+report_path = "/"
+
+# Run when the master asks for a reboot.
+reboot_command = ["systemctl", "reboot"]

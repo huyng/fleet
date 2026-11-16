@@ -1,0 +1,700 @@
+/* Styles for the fleet page.
+ *
+ * The look uses one green accent on a dark default palette, hairline borders,
+ * flat surfaces with no shadows, and small monospace labels.
+ *
+ * Colours are declared once as custom properties. Nothing below a palette
+ * block names a colour directly, so the light palette only has to override
+ * the variables.
+ *
+ * Each accent and alarm colour has two forms: the plain one is a fill, used
+ * for bars and dots, and the -text one is safe to read. They differ only in
+ * the light palette, where the bright green used on dark would be almost
+ * invisible on a pale background.
+ */
+
+:root {
+  --accent: #3ecf8e;
+  --accent-text: #3ecf8e;
+  --accent-hover: #2eb87a;
+  --accent-bg: rgba(62, 207, 142, 0.08);
+  --accent-border: rgba(62, 207, 142, 0.22);
+
+  --main: #1a1a1a;
+  --surface: #222222;
+  --surface2: #282828;
+  --sink: #141414;
+  --edge: #333333;
+  --fg: #e8e8e8;
+  --muted: #949494;
+
+  --warn: #f7c948;
+  --crit: #ef4444;
+  --crit-text: #f87171;
+  --crit-border: rgba(239, 68, 68, 0.32);
+
+  --font: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+
+  --radius: 8px;
+  --radius-sm: 4px;
+
+  color-scheme: dark;
+}
+
+:root.light {
+  --accent-bg: rgba(62, 207, 142, 0.07);
+  --accent-border: rgba(62, 207, 142, 0.28);
+  --accent-text: #0f7a4d;
+
+  --main: #f6f8fa;
+  --surface: #ffffff;
+  --surface2: #f0f2f5;
+  --sink: #ffffff;
+  --edge: #d0d7de;
+  --fg: #1f2328;
+  --muted: #636c76;
+
+  --warn: #9a6700;
+  --crit: #cf222e;
+  --crit-text: #b3121d;
+  --crit-border: rgba(207, 34, 46, 0.3);
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--main);
+  color: var(--fg);
+  font: 400 14px/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--edge);
+  border-radius: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* One measured column. */
+
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* Nav: sticky, translucent, one hairline under it. */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--edge);
+  background: color-mix(in srgb, var(--main) 88%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 48px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refresh,
+.theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.refresh {
+  padding: 0 10px;
+}
+
+.theme {
+  width: 28px;
+  padding: 0;
+}
+
+.refresh:hover:not(:disabled),
+.theme:hover {
+  color: var(--fg);
+  border-color: var(--accent-text);
+}
+
+.refresh:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* A single bar holding the tally and the time of the last update. */
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.bar-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.label {
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.stamp {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+
+/* Tally pills. */
+
+.tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tally li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.tally b {
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin-right: 1px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tally .all .dot {
+  background: var(--muted);
+}
+
+.tally .up .dot {
+  background: var(--accent-text);
+}
+
+.tally .stale .dot {
+  background: var(--crit-text);
+}
+
+/* Cards: flat surface, one hairline, no shadow. */
+
+.nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 14px;
+  padding: 22px 0 40px;
+}
+
+.node {
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.node.is-stale {
+  border-color: var(--crit-border);
+}
+
+.node-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.node-name {
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  overflow-wrap: anywhere;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 1px 6px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill .dot {
+  background: currentColor;
+}
+
+.pill.up {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.pill.stale {
+  border-color: var(--crit-border);
+  background: color-mix(in srgb, var(--crit) 12%, transparent);
+  color: var(--crit-text);
+}
+
+/* Rows: a fixed label column, then the figures. */
+
+.rows {
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 18px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--edge);
+}
+
+.row dt {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.row dd {
+  margin: 0;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.unknown {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.loads {
+  display: flex;
+  gap: 16px;
+}
+
+.loads span {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.loads b {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.loads i {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-style: normal;
+}
+
+/* Usage bar and its figures on one line. */
+
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.meter-track {
+  flex: 1;
+  min-width: 40px;
+  height: 4px;
+  border-radius: 3px;
+  background: var(--surface2);
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.meter-fill.warn {
+  background: var(--warn);
+}
+
+.meter-fill.crit {
+  background: var(--crit);
+}
+
+.meter-value {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.meter-value b {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* Process list: a code block shape, folded away until clicked. */
+
+.procs {
+  border-top: 1px solid var(--edge);
+}
+
+.procs summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.procs summary::-webkit-details-marker {
+  display: none;
+}
+
+.procs summary::before {
+  content: "▸";
+  transition: transform 0.12s ease;
+}
+
+.procs[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.procs summary:hover {
+  color: var(--fg);
+}
+
+.cb {
+  margin: 0 10px 12px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--sink);
+  overflow: hidden;
+}
+
+.cb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--edge);
+  background: var(--surface2);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+
+.proc-scroll {
+  max-height: 16rem;
+  overflow: auto;
+}
+
+.proc-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.proc-scroll th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--edge);
+  background: var(--sink);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.proc-scroll td {
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--edge);
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.proc-scroll tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.proc-scroll tbody tr:hover td {
+  background: var(--surface);
+}
+
+.proc-scroll .cmd {
+  width: 100%;
+  color: var(--muted);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A quiet notice for a failed poll. */
+
+.notice {
+  margin: 18px 0 0;
+  padding: 10px 14px;
+  border: 1px solid var(--crit-border);
+  border-left: 3px solid var(--crit);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: color-mix(in srgb, var(--crit) 8%, transparent);
+  color: var(--fg);
+  font-size: 12.5px;
+}
+
+/* Terminal block, used for the empty state. */
+
+.term {
+  margin: 22px 0 40px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--sink);
+  overflow: hidden;
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--edge);
+  background: var(--surface2);
+}
+
+.term-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.term-dot.r {
+  background: #ff6058;
+}
+
+.term-dot.y {
+  background: #ffbd2e;
+}
+
+.term-dot.g {
+  background: #28c941;
+}
+
+.term-label {
+  flex: 1;
+  margin-left: -46px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-align: center;
+}
+
+.term pre {
+  margin: 0;
+  padding: 16px 18px;
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.85;
+  overflow-x: auto;
+}
+
+.tp {
+  color: var(--accent-text);
+  user-select: none;
+}
+
+.tc {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.cursor {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  background: var(--accent);
+  vertical-align: middle;
+  animation: blink 1.1s step-end infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 16px 0 36px;
+  border-top: 1px solid var(--edge);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+
+@media (max-width: 720px) {
+  .wrap {
+    padding: 0 18px;
+  }
+
+  .nodes {
+    grid-template-columns: 1fr;
+  }
+
+  .row {
+    grid-template-columns: 66px 1fr;
+    padding: 8px 14px;
+  }
+
+  .node-head,
+  .procs summary {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
